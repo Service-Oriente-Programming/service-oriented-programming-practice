@@ -21,7 +21,7 @@ $("#update_drug").submit(function(event){// on clicking submit
 
 
     var request = {//use a put API request to use data from above to replace what's on database
-    "url" : `https://${url}/api/drugs/${data.id}`,
+    "url" : `http://${url}/api/drugs/${data.id}`,
     "method" : "PUT",
     "data" : data
 }
@@ -39,7 +39,7 @@ if(window.location.pathname == "/manage"){//since items are listed on manage
         let id = $(this).attr("data-id") // pick the value from the data-id
 
         let request = {//save API request in variable
-            "url" : `https://${url}/api/drugs/${id}`,
+            "url" : `http://${url}/api/drugs/${id}`,
             "method" : "DELETE"
         }
 
@@ -54,13 +54,46 @@ if(window.location.pathname == "/manage"){//since items are listed on manage
 }
 
 if(window.location.pathname == "/purchase"){
-//$("#purchase_table").hide();
+    $("#purchase_table").hide();
 
-$("#drug_days").submit(function(event){//on a submit event on the element with id add_drug
-    event.preventDefault();//prevent default submit behaviour
-    $("#purchase_table").show();
-    days = +$("#days").val();
-    alert("Drugs for " + days + " days!");//alert this in the browser
-})
+    $("#drug_days").submit(function(event){//on a submit event on the element with id drug_days
+        event.preventDefault();//prevent default submit behaviour
+        $("#purchase_table").show();
+        let days = +$("#days").val();
+        
+        // Update the table with new calculations
+        updatePurchaseTable(days);
+        alert("Drugs for " + days + " days!");//alert this in the browser
+    })
 
+    function updatePurchaseTable(days) {
+        // Get all drugs from the page data
+        let drugs = window.drugsData || [];
+        
+        // Update each row in the table
+        $("#purchase_table tbody tr").each(function(index) {
+            if (drugs[index]) {
+                let drug = drugs[index];
+                let pills = days * drug.perDay;
+                let cardsToBuy = Math.ceil(pills / drug.card);
+                let packsToBuy = Math.ceil(pills / drug.pack);
+                let cardsPerPack = drug.pack / drug.card;
+                
+                // Update the row
+                $(this).find("td:eq(2)").html(cardsToBuy + " (" + cardsPerPack.toFixed(1) + " " + (cardsPerPack < 2 ? "card" : "cards") + " per pack)");
+                $(this).find("td:eq(3)").html(packsToBuy);
+            }
+        });
+    }
+
+    function deleteDrug(id) {
+        fetch(`/api/drugs/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Reload page hoặc remove element
+            location.reload();
+        });
+    }
 }

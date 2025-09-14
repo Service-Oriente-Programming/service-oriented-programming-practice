@@ -12,7 +12,7 @@
 			<tr>
 				<th>ID</th>
 				<th>Drug Name</th>
-				<th> Cards to Buy</th>
+				<th>Cards to Buy</th>
 				<th>Packs to Buy</th>
 			</tr>
 		</thead>
@@ -24,12 +24,17 @@
 			<tr>
 				<td><%= i + 1 %></td>
 				<td><%= drugs[i].name %></td>
-				<td><%= Math.ceil(pills/drugs[i].card) %> (<%= drugs[i].pack/drugs[i].card %> <% if (drugs[i].pack/drugs[i].card < 2) { %> card <%} else { %> cards <% } %> per pack)</td>
+				<td><%= Math.ceil(pills/drugs[i].card) %> (<%= (drugs[i].pack/drugs[i].card).toFixed(1) %> <% if (drugs[i].pack/drugs[i].card < 2) { %> card <%} else { %> cards <% } %> per pack)</td>
 				<td><%= Math.ceil(pills/drugs[i].pack) %></td>
 			</tr>
 			<% } %> <!--  End loop -->
 		</tbody>
 	</table>
+
+	<script>
+		// Pass drugs data to JavaScript
+		window.drugsData = <%- JSON.stringify(drugs) %>;
+	</script>
 </main>
 <!-- End main section -->
 <!-- add footer -->

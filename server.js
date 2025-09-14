@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');//body-parser makes it easier to deal 
 const dotenv = require('dotenv').config();//indicates we would be using .env
 const morgan = require('morgan');//this logs requests so you can easily troubleshoot
 const connectMongo = require('./server/database/connect');//requires connect.js file
+const { notFound, errorHandler } = require('./server/middleware/errorHandler');//requires error handlers
 const PORT = process.env.PORT || 3100; //uses either what's in our env or 3100 as our port (you can use any unused port)
 
 
@@ -21,6 +22,9 @@ connectMongo();
 //load the routes
 app.use('/',require('./server/routes/routes'));//Pulls the routes file whenever this is loaded
 
+// Error handling middleware (must be after routes)
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, function() {//specifies port to listen on
 	console.log('listening on '+ PORT);
